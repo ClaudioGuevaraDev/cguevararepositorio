@@ -1,13 +1,32 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Input } from '@nextui-org/react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { toast } from 'sonner';
+
+import { auth } from '@/libs/firebase';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      router.push('/');
+    } catch (error) {
+      toast.error('Error al iniciar sesión');
+
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,7 +56,13 @@ function Login() {
             </CardBody>
 
             <CardFooter>
-              <Button type="submit" color="primary" className="w-full" isLoading={loading}>
+              <Button
+                type="submit"
+                color="primary"
+                className="w-full"
+                isLoading={loading}
+                isDisabled={email === '' || password === ''}
+              >
                 Iniciar sesión
               </Button>
             </CardFooter>

@@ -1,12 +1,28 @@
 import { Button } from '@nextui-org/react';
 import clsx from 'clsx';
+import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { toast } from 'sonner';
+
+import useAuth from '@/hooks/useAuth';
+import { auth } from '@/libs/firebase';
 
 function AdminLayout({ children }) {
   const router = useRouter();
 
-  const handleSignOut = async () => {};
+  const { user } = useAuth();
+  if (user == null) return <div></div>;
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+
+      router.push('/');
+    } catch (error) {
+      toast.error('Error al cerrar la sesión');
+    }
+  };
 
   return (
     <div>

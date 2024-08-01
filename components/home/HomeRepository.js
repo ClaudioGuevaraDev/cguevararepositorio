@@ -19,7 +19,7 @@ function HomeRepository({ resources, topics }) {
         <Autocomplete
           label="Tópico"
           defaultItems={topics ?? []}
-          className="max-w-56"
+          className="md:max-w-56"
           selectedKey={topic}
           onSelectionChange={setTopic}
         >
