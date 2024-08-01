@@ -13,7 +13,9 @@ function useAuth() {
     const unsubuscribe = onAuthStateChanged(auth, (user) => {
       if (user == null) {
         setUser(null);
-        router.push('/');
+        router.push('/', undefined, {
+          shallow: true
+        });
       } else {
         setUser(user);
       }

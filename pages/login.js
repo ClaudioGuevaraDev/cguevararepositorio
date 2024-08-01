@@ -21,7 +21,9 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
 
-      router.push('/');
+      router.push('/', undefined, {
+        shallow: true
+      });
     } catch (error) {
       toast.error('Error al iniciar sesión');
 

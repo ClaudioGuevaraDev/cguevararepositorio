@@ -21,14 +21,15 @@ function Home({ resources, topics }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const [resources, topics] = await Promise.all([getAllResources(), getAllTopics()]);
 
   return {
     props: {
       resources,
       topics
-    }
+    },
+    revalidate: 60 * 60 * 24
   };
 }
 

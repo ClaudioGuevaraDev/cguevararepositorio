@@ -18,7 +18,9 @@ function AdminLayout({ children }) {
     try {
       await signOut(auth);
 
-      router.push('/');
+      router.push('/', undefined, {
+        shallow: true
+      });
     } catch (error) {
       toast.error('Error al cerrar la sesión');
     }
