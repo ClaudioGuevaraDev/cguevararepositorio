@@ -136,7 +136,8 @@ function Home() {
             {people.map((person, index) => (
               <li
                 key={index}
-                className="col-span-1 rounded-xl bg-white shadow-md border border-gray-200">
+                className="col-span-1 rounded-xl bg-white shadow-md border border-gray-200"
+              >
                 <div className="flex w-full items-center justify-between space-x-6 p-6 py-8">
                   <div className="flex-1 truncate">
                     <div className="flex items-center space-x-3">
@@ -165,7 +166,8 @@ function Home() {
 
       <div
         aria-hidden="true"
-        className="absolute left-1/2 right-0 top-0 -z-10 -ml-24 transform-gpu overflow-hidden blur-3xl lg:ml-24 xl:ml-48">
+        className="absolute left-1/2 right-0 top-0 -z-10 -ml-24 transform-gpu overflow-hidden blur-3xl lg:ml-24 xl:ml-48"
+      >
         <div
           style={{
             clipPath:

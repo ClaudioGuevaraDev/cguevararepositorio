@@ -1,5 +1,6 @@
 import {
   Input,
+  Link,
   Pagination,
   Spinner,
   Table,
@@ -11,26 +12,39 @@ import {
   User
 } from '@nextui-org/react';
 import { useQuery } from '@tanstack/react-query';
-import { collection, getDocs } from 'firebase/firestore';
 import { useState } from 'react';
 import { IoSearchOutline } from 'react-icons/io5';
 
 import { ROWS_PER_PAGE } from '@/config';
-import { firestore } from '@/libs/firebase';
-import { getAllTopics } from '@/services/topics';
+import { getAllResources } from '@/services/resources';
+import { getTopic } from '@/services/topics';
 
-function TopicsTable() {
+function ResourcesTable() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
-  const { data: topics, isLoading: isLoadingTopics } = useQuery({
-    queryKey: ['topics'],
-    queryFn: getAllTopics
+  const { data: resources, isLoading: isLoadingResources } = useQuery({
+    queryKey: ['resources'],
+    queryFn: async () => {
+      const resources = await getAllResources();
+
+      const parserResources = [];
+      for (let i = 0; i < resources.length; i++) {
+        const { name } = await getTopic(resources[i].topic);
+
+        parserResources.push({
+          ...resources[i],
+          topic_name: name
+        });
+      }
+
+      return parserResources;
+    }
   });
 
-  const parserTopics =
-    topics
-      ?.filter((topic) => topic.name.toLowerCase().includes(search.toLowerCase()))
+  const parserResources =
+    resources
+      ?.filter((resource) => resource.name.toLowerCase().includes(search.toLowerCase()))
       .slice(ROWS_PER_PAGE * (page - 1), ROWS_PER_PAGE * page) ?? [];
 
   return (
@@ -42,7 +56,7 @@ function TopicsTable() {
             <Input
               type="search"
               startContent={<IoSearchOutline className="w-4 h-4" />}
-              placeholder="Buscar tópico por nombre"
+              placeholder="Buscar recurso por nombre"
               className="md:max-w-sm truncate"
               value={search}
               onValueChange={setSearch}
@@ -50,9 +64,9 @@ function TopicsTable() {
           </div>
         }
         bottomContent={
-          topics && (
+          resources && (
             <Pagination
-              total={Math.ceil(topics.length / ROWS_PER_PAGE)}
+              total={Math.ceil(resources.length / ROWS_PER_PAGE)}
               page={page}
               onChange={setPage}
               showControls
@@ -64,27 +78,22 @@ function TopicsTable() {
       >
         <TableHeader>
           <TableColumn>NOMBRE</TableColumn>
-          <TableColumn>RECURSOS</TableColumn>
-          <TableColumn>COLOR</TableColumn>
+          <TableColumn>LINK</TableColumn>
+          <TableColumn>RECURSO</TableColumn>
         </TableHeader>
         <TableBody
-          items={parserTopics}
-          emptyContent="Sin tópicos"
-          isLoading={isLoadingTopics}
+          items={parserResources}
+          emptyContent="Sin recursos"
+          isLoading={isLoadingResources}
           loadingContent={<Spinner label="Cargando..." className="mt-8" />}
         >
-          {(topic) => (
-            <TableRow key={topic.id}>
+          {(resource) => (
+            <TableRow key={resource.id}>
+              <TableCell>{resource.name}</TableCell>
               <TableCell>
-                <User
-                  name={topic.name}
-                  avatarProps={{
-                    src: topic.image
-                  }}
-                />
+                <Link href={resource.link}>Link</Link>
               </TableCell>
-              <TableCell>{topic.resources.length}</TableCell>
-              <TableCell>{topic.color}</TableCell>
+              <TableCell>{resource.topic_name}</TableCell>
             </TableRow>
           )}
         </TableBody>
@@ -93,4 +102,4 @@ function TopicsTable() {
   );
 }
 
-export default TopicsTable;
+export default ResourcesTable;

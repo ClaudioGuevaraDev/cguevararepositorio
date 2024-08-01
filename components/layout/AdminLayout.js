@@ -23,7 +23,8 @@ function AdminLayout({ children }) {
                       {
                         'bg-gray-100': router.pathname === '/topics'
                       }
-                    )}>
+                    )}
+                  >
                     Tópicos
                   </Link>
                 </li>
@@ -35,7 +36,8 @@ function AdminLayout({ children }) {
                       {
                         'bg-gray-100': router.pathname === '/resources'
                       }
-                    )}>
+                    )}
+                  >
                     Recursos
                   </Link>
                 </li>

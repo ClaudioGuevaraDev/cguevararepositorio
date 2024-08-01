@@ -1,26 +1,24 @@
 import {
+  Autocomplete,
+  AutocompleteItem,
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Input,
-  Select,
-  SelectItem
+  Input
 } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { doc, setDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 
 import { TOPICS_COLORS } from '@/config';
-import { firestore, storage } from '@/libs/firebase';
+import { createTopic, uploadTopicLogo } from '@/services/topics';
 
 function TopicCreateForm() {
   const [name, setName] = useState('');
-  const [color, setColor] = useState(new Set([]));
+  const [color, setColor] = useState('');
   const [logo, setLogo] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -34,19 +32,16 @@ function TopicCreateForm() {
     try {
       const id = uuidv4();
 
-      const storageRef = ref(storage, `topics/${id}`);
-      await uploadBytes(storageRef, logo[0]);
-      const url = await getDownloadURL(storageRef);
+      const url = await uploadTopicLogo(id, logo[0]);
 
-      const topicRef = doc(firestore, 'topics', id);
       const topic = {
         id: id,
         name: name,
         image: url,
         resources: [],
-        color: Array.from(color)[0]
+        color: color
       };
-      await setDoc(topicRef, topic);
+      await createTopic(topic);
 
       queryClient.setQueryData(['topics'], (oldData) => {
         return [topic, ...oldData];
@@ -77,18 +72,19 @@ function TopicCreateForm() {
               onValueChange={setName}
             />
 
-            <Select
+            <Autocomplete
               label="Color"
-              items={TOPICS_COLORS}
+              defaultItems={TOPICS_COLORS}
+              selectedKey={color}
+              onSelectionChange={setColor}
               className="mb-4"
-              selectedKeys={color}
-              onSelectionChange={setColor}>
+            >
               {(color) => (
-                <SelectItem key={color.name} value={color.name}>
+                <AutocompleteItem key={color.name} value={color.name}>
                   {color.name}
-                </SelectItem>
+                </AutocompleteItem>
               )}
-            </Select>
+            </Autocomplete>
 
             <Input type="file" label="Logo" size="sm" onChange={(e) => setLogo(e.target.files)} />
           </CardBody>
@@ -98,9 +94,10 @@ function TopicCreateForm() {
               color="primary"
               className="w-full"
               isDisabled={
-                name === '' || logo == null || logo.length === 0 || Array.from(color).length === 0
+                name === '' || logo == null || logo.length === 0 || color === '' || color == null
               }
-              isLoading={saving}>
+              isLoading={saving}
+            >
               Añadir tópico
             </Button>
           </CardFooter>
