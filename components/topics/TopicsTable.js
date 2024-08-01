@@ -10,16 +10,41 @@ import {
   TableRow,
   User
 } from '@nextui-org/react';
+import { useQuery } from '@tanstack/react-query';
+import { collection, getDocs } from 'firebase/firestore';
 import { useState } from 'react';
 import { IoSearchOutline } from 'react-icons/io5';
 
 import { ROWS_PER_PAGE } from '@/config';
-
-const topics = [];
+import { firestore } from '@/libs/firebase';
 
 function TopicsTable() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+
+  const { data: topics, isLoading: isLoadingTopics } = useQuery({
+    queryKey: ['topics'],
+    queryFn: async () => {
+      const topicsRef = collection(firestore, 'topics');
+      const querySnapshot = await getDocs(topicsRef);
+
+      const topics = [];
+      querySnapshot.forEach((doc) => {
+        const { id } = doc;
+        const { name, image, resources, color } = doc.data();
+
+        topics.push({
+          id: id,
+          name: name,
+          image: image,
+          color: color,
+          resources: resources
+        });
+      });
+
+      return topics;
+    }
+  });
 
   const parserTopics =
     topics
@@ -62,7 +87,7 @@ function TopicsTable() {
         <TableBody
           items={parserTopics}
           emptyContent="Sin tópicos"
-          //   isLoading={isLoadingTopics}
+          isLoading={isLoadingTopics}
           loadingContent={<Spinner label="Cargando..." className="mt-8" />}>
           {(topic) => (
             <TableRow key={topic.id}>
