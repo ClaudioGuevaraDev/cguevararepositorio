@@ -25,5 +25,17 @@ export const getAllResources = async () => {
     });
   });
 
-  return resources;
+  const parserResources = [];
+  for (let i = 0; i < resources.length; i++) {
+    const { name, image, color } = await getTopic(resources[i].topic);
+
+    parserResources.push({
+      ...resources[i],
+      topic_name: name,
+      topic_image: image,
+      topic_color: color
+    });
+  }
+
+  return parserResources;
 };

@@ -43,9 +43,9 @@ export const getTopic = async (id) => {
   const docSnap = await getDoc(topicRef);
 
   if (docSnap.exists()) {
-    const { name, image, resources } = docSnap.data();
+    const { name, image, resources, color } = docSnap.data();
 
-    return { id, name, image, resources };
+    return { id, name, image, resources, color };
   } else {
     return null;
   }

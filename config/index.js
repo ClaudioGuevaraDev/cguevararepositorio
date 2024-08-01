@@ -1,4 +1,5 @@
 export const ROWS_PER_PAGE = 10;
+export const RESOURCES_PER_PAGE = 12;
 
 export const TOPICS_COLORS = [
   { name: 'slate' },

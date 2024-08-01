@@ -8,8 +8,7 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow,
-  User
+  TableRow
 } from '@nextui-org/react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -17,7 +16,6 @@ import { IoSearchOutline } from 'react-icons/io5';
 
 import { ROWS_PER_PAGE } from '@/config';
 import { getAllResources } from '@/services/resources';
-import { getTopic } from '@/services/topics';
 
 function ResourcesTable() {
   const [search, setSearch] = useState('');
@@ -25,21 +23,7 @@ function ResourcesTable() {
 
   const { data: resources, isLoading: isLoadingResources } = useQuery({
     queryKey: ['resources'],
-    queryFn: async () => {
-      const resources = await getAllResources();
-
-      const parserResources = [];
-      for (let i = 0; i < resources.length; i++) {
-        const { name } = await getTopic(resources[i].topic);
-
-        parserResources.push({
-          ...resources[i],
-          topic_name: name
-        });
-      }
-
-      return parserResources;
-    }
+    queryFn: getAllResources
   });
 
   const parserResources =

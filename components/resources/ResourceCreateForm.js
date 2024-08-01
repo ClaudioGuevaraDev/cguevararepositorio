@@ -8,7 +8,7 @@ import {
   CardHeader,
   Input
 } from '@nextui-org/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,6 +21,8 @@ function ResourceCreateForm() {
   const [link, setLink] = useState('');
   const [topic, setTopic] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data: topics } = useQuery({
     queryKey: ['topics'],
@@ -49,6 +51,10 @@ function ResourceCreateForm() {
       await createResource(resource);
 
       await updateTopic(topic, { ...foundTopic, resources: [...foundTopic.resources, topic] });
+
+      queryClient.setQueryData(['resources'], (oldData) => {
+        return [{ ...resource, topic_name: foundTopic.name }, ...oldData];
+      });
 
       toast.success('Recurso creado con éxito');
     } catch (error) {
