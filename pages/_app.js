@@ -6,7 +6,13 @@ import { Toaster } from 'sonner';
 
 import Background from '@/components/layout/Background';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 export default function App({ Component, pageProps }) {
   return (
