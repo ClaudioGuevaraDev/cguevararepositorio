@@ -1,41 +1,42 @@
-import { Autocomplete, AutocompleteItem, Avatar, Link, Pagination } from '@nextui-org/react';
+import { Avatar, Link, Pagination, Select, SelectItem } from '@nextui-org/react';
 import clsx from 'clsx';
 import { useState } from 'react';
 
 import { RESOURCES_PER_PAGE } from '@/config';
 
 function HomeRepository({ resources, topics }) {
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = useState(new Set([]));
   const [page, setPage] = useState(1);
 
   const parserResources =
     resources
-      ?.filter((resource) => (topic === '' || topic == null ? resource : resource.topic === topic))
+      ?.filter((resource) =>
+        Array.from(topic).length === 0 || topic == null
+          ? resource
+          : resource.topic === Array.from(topic)[0]
+      )
       .slice(RESOURCES_PER_PAGE * (page - 1), RESOURCES_PER_PAGE * page) ?? [];
 
   return (
     <div className="mt-14 pb-6">
       <div className="mb-4 flex flex-wrap">
-        <Autocomplete
+        <Select
           label="Tópico"
-          defaultItems={topics ?? []}
+          items={topics ?? []}
           className="md:max-w-56"
-          selectedKey={topic}
-          onSelectionChange={(newValue) => {
-            setPage(1);
-            setTopic(newValue);
-          }}
+          selectedKeys={topic}
+          onSelectionChange={setTopic}
         >
           {(topic) => (
-            <AutocompleteItem
+            <SelectItem
+              startContent={<Avatar alt={topic.name} src={topic.image} className="w-6 h-6" />}
               key={topic.id}
               value={topic.id}
-              startContent={<Avatar alt={topic.name} src={topic.image} className="w-6 h-6" />}
             >
               {topic.name}
-            </AutocompleteItem>
+            </SelectItem>
           )}
-        </Autocomplete>
+        </Select>
       </div>
 
       <ul role="list" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
