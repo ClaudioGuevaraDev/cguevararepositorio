@@ -21,7 +21,10 @@ function HomeRepository({ resources, topics }) {
           defaultItems={topics ?? []}
           className="md:max-w-56"
           selectedKey={topic}
-          onSelectionChange={setTopic}
+          onSelectionChange={(newValue) => {
+            setPage(1);
+            setTopic(newValue);
+          }}
         >
           {(topic) => (
             <AutocompleteItem
