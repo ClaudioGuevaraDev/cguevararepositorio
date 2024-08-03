@@ -86,7 +86,7 @@ function TopicCreateForm() {
               )}
             </Autocomplete>
 
-            <Input type="file" label="Logo" size="sm" onChange={(e) => setLogo(e.target.files)} />
+            <input type="file" onChange={(e) => setLogo(e.target.files)} />
           </CardBody>
           <CardFooter>
             <Button
